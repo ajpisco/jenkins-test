@@ -1,36 +1,188 @@
+/* groovylint-disable NestedBlockDepth */
+def CI_REGISTRY_WORKER_BE_IMAGE = 'worker-be'
+def CI_REGISTRY_WORKER_UI_IMAGE = 'worker-ui'
+def CI_REGISTRY_INDUSTRY_BE_IMAGE = 'industry-be'
+def CI_REGISTRY_INDUSTRY_UI_IMAGE = 'industry-ui'
+def CI_REGISTRY_ANCILLARY_IMAGE = 'postman-be'
+def CI_REGISTRY_API_IMAGE = 'api-be'
+def CI_REGISTRY_LATEST = 'latest'
+// def K8_CLUSTER_NAME = "mgd"
+def K8_DEV_CLUSTER_NAME = 'mgd'
+def K8_DEV_CLUSTER_NAMESPACE = 'dev-ns'
+def K8_DEV_CLUSTER_STATE = 'mgd-mypass-com'
+def K8_SIT_CLUSTER_NAME = 'mgd'
+def K8_SIT_CLUSTER_NAMESPACE = 'sit-ns'
+// def K8_SIT_CLUSTER_STATE = "mgd-mypass-com"
+def K8_QA_CLUSTER_NAME = 'mgd'
+def K8_QA_CLUSTER_NAMESPACE = 'qa-ns'
+// def K8_QA_CLUSTER_STATE = "mgd-mypass-com"
+def K8_PIH_CLUSTER_NAME = 'mgu'
+def K8_PIH_CLUSTER_NAMESPACE = 'pih-ns'
+// def K8_PIH_CLUSTER_STATE = "mgu-mypass-com"
+def K8_MIA_CLUSTER_NAME = 'mgd'
+def K8_MIA_CLUSTER_NAMESPACE = 'mia-ns'
+// def K8_MIA_CLUSTER_STATE = "mgd-mypass-com"
+def K8_EAP_CLUSTER_NAME = 'mgu'
+def K8_EAP_CLUSTER_NAMESPACE = 'eap-ns'
+// def K8_EAP_CLUSTER_STATE = "mgu-mypass-com"
+def K8_TSB_CLUSTER_NAME = 'mgu'
+def K8_TSB_CLUSTER_NAMESPACE = 'tsb-ns'
+// def K8_TSB_CLUSTER_STATE = "mgu-mypass-com"
+def K8_UAT_CLUSTER_NAME = 'mgu'
+def K8_UAT_CLUSTER_NAMESPACE = 'uat-ns'
+// def K8_UAT_CLUSTER_STATE = "mgu-mypass-com"
+def K8_BHP1B_UAT_CLUSTER_NAME = 'mgu'
+def K8_BHP1B_UAT_CLUSTER_NAMESPACE = 'bhp1buat-ns'
+// def K8_BHP1B_UAT_CLUSTER_STATE = "mgu-mypass-com"
+def K8_UAT2_CLUSTER_NAME = 'mgu'
+def K8_UAT2_CLUSTER_NAMESPACE = 'uat2-ns'
+// def K8_UAT2_CLUSTER_STATE = "mgu-mypass-com"
+def K8_MGU_CLUSTER_NAME = 'mgu'
+def K8_MGU_CLUSTER_NAMESPACE = 'mgu-ns'
+// def K8_MGU_CLUSTER_STATE = "mgu-mypass-com"
+def K8_DEV2_CLUSTER_NAME = 'mgu'
+def K8_DEV2_CLUSTER_NAMESPACE = 'dev2-ns'
+// def K8_DEV2_CLUSTER_STATE = "mgu-mypass-com"
+def K8_BHPUAT_CLUSTER_NAME = 'mgu'
+def K8_BHPUAT_CLUSTER_NAMESPACE = 'bhpuat-ns'
+// def K8_BHPUAT_CLUSTER_STATE = "mgu-mypass-com"
+def K8_MGP_CLUSTER_NAME = 'mgp'
+def K8_MGP_CLUSTER_NAMESPACE = 'mgp-ns'
+// def K8_MGP_CLUSTER_STATE = "mgp-mypass-com"
+def K8_KUBECTL_VERSION = '1.1.7'
+
+def GRADLE_USER_HOME="${env.WORKSPACE}/.gradle"
+
 pipeline {
     agent any
 
     stages {
-        stage('Init') {
-            steps {
-                echo 'Initializing..'
-                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+        stage('openMr') {
+            stages {
+                stage('open-merge'){
+                    environment {
+                        stageName = 'open-merge'
+                    }
+                    when {
+                        expression {
+                            // getGitBranchName() ==~ /^feature*\/*.*/
+                            params.branch ==~ /^feature*\/*.*/
+                        }
+                    }
+                    steps {
+                        script {
+                            // try block to prevent the build to stop in case of error
+                            try {
+                                // HOST="${CI_PROJECT_URL}"
+                                // CI_PROJECT_ID=${CI_PROJECT_ID}
+                                // GITLAB_USER_ID=${GITLAB_USER_ID
+                                // PRIVATE_TOKEN=${PRIVATE_TOKEN}
+
+                                // get the latest commit ref (example: refs/heads/somebranch)
+                                CI_COMMIT_REF_NAME = sh(
+                                    script: 'git show-ref --heads | cut -d " " -f2-',
+                                    returnStdout: true
+                                ).trim()
+                                sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
+                            } catch (err) {
+                                echo "Error on ${stageName} stage: " + err.getMessage()
+                            }
+                        }
+                    }
+                }
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-                echo 'Running pytest..'
+
+        stage('package') {
+            stages {
+                stage('package-worker-be'){
+                    environment {
+                        stageName = 'package-worker-be'
+                    }
+                    when {
+                        anyOf {
+                            anyOf {
+                                branch comparator: 'EQUALS', pattern: 'branches'
+                                branch comparator: 'EQUALS', pattern: 'web'
+                            }
+                            anyOf {
+                                changeset 'services/core/worker/**/*'
+                                changeset 'services/core/worker-public/**/*'
+                                changeset 'services/core/commons/**/*'
+                            }
+                        }
+                        not {
+                            anyOf {
+                                changeset 'build.gradle'
+                                changeset 'services/shared/**/*'
+                                changeset 'web-apps/projects/shared/**/*'
+                                changeset 'web-apps/shared-global/**/*'
+                            }
+                        }
+                    }
+                    steps {
+                        script {
+                            try {
+                                
+                                sh(
+                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh(
+                                    script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'gradle :services:core:worker-public:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh(
+                                    script: 'cd aio/env-scope',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'docker-compose -f docker-compose-all.yml build worker-be',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${stageName} stage: " + err.getMessage()
+                                throw err
+                            }
+                        }
+                    }
+                }
             }
         }
-        stage('Build') {
-            steps {
-                echo 'Building..'
-                echo 'Running docker build -t sntshk/cotu .'
-            }
-        }
-        stage('Publish') {
-            steps {
-                echo 'Publishing..'
-                echo 'Running docker push..'
-            }
-        }
-        stage('Cleanup') {
-            steps {
-                echo 'Cleaning..'
-                echo 'Running docker rmi..'
-            }
-        }
+
+
+
+        // stage('test') {
+        //     steps {
+        //         echo "test ${env.CI_COMMIT_REF_NAME}"
+        //     }
+        // }
     }
+}
+
+String getGitBranchName() {
+    return sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
 }
