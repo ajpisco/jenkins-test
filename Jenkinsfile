@@ -64,10 +64,7 @@ pipeline {
                         stageName = 'open-merge'
                     }
                     when {
-                        expression {
-                            // getGitBranchName() ==~ /^feature*\/*.*/
-                            params.branch ==~ /^feature*\/*.*/
-                        }
+                        branch comparator: 'REGEXP', pattern: '/^feature*\\/*.*/'
                     }
                     steps {
                         script {
