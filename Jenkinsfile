@@ -69,7 +69,7 @@ pipeline {
                             try {
                                 // HOST="${CI_PROJECT_URL}"
                                 // CI_PROJECT_ID=${CI_PROJECT_ID}
-                                // GITLAB_USER_ID=${GITLAB_USER_ID
+                                // GITLAB_USER_ID=${GITLAB_USER_ID}
                                 // PRIVATE_TOKEN=${PRIVATE_TOKEN}
 
                                 // get the latest commit ref (example: refs/heads/somebranch)
@@ -110,14 +110,16 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
+                                a = sh(
                                     script: 'ls -l',
                                     returnStdout: true
                                 ).trim()
-                                sh(
+                                echo "${a}"
+                                b = sh(
                                     script: 'pwd',
                                     returnStdout: true
                                 ).trim()
+                                echo "${b}"
                                 
                                 sh(
                                     script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
