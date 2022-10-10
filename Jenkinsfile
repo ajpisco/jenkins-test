@@ -110,6 +110,14 @@ pipeline {
                     steps {
                         script {
                             try {
+                                sh(
+                                    script: 'ls -l',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'pwd',
+                                    returnStdout: true
+                                ).trim()
                                 
                                 sh(
                                     script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
