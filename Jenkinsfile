@@ -88,6 +88,16 @@ pipeline {
         }
 
         stage('package') {
+            when {
+                not {
+                    anyOf {
+                        changeset 'build.gradle'
+                        changeset 'services/shared/**/*'
+                        changeset 'web-apps/projects/shared/**/*'
+                        changeset 'web-apps/shared-global/**/*'
+                    }
+                }
+            }
             stages {
                 stage('package-worker-be'){
                     when {
@@ -95,14 +105,6 @@ pipeline {
                             changeset 'services/core/worker/**/*'
                             changeset 'services/core/worker-public/**/*'
                             changeset 'services/core/commons/**/*'
-                        }
-                        not {
-                            anyOf {
-                                changeset 'build.gradle'
-                                changeset 'services/shared/**/*'
-                                changeset 'web-apps/projects/shared/**/*'
-                                changeset 'web-apps/shared-global/**/*'
-                            }
                         }
                     }
                     steps {
@@ -123,10 +125,7 @@ pipeline {
                                     returnStdout: true
                                 ).trim()
                                 
-                                sh(
-                                    script: 'cd aio/env-scope',
-                                    returnStdout: true
-                                ).trim()
+                                sh 'cd aio/env-scope'
                                 sh(
                                     script: 'docker-compose -f docker-compose-all.yml build worker-be',
                                     returnStdout: true
@@ -155,27 +154,69 @@ pipeline {
                         }
                     }
                 }
-                // stage('package-worker-ui'){
-                //     when {
-                //         branch comparator: 'REGEXP', pattern: '^feature\\/*.'
-                //     }
-                // }
-                // stage('package-industry-be'){
-                // }
-                // stage('package-industry-ui'){
-                // }
-                // stage('package-ancillary'){
-                // }
-                // stage('package-api'){
-                // }
-                // stage('package-lighthouse'){
-                // }
-                // stage('package-plugins'){
-                // }
-                // stage('package-all'){
-                // }
-                // stage('package-all-shared'){
-                // }
+                stage('package-worker-ui'){
+                    when {
+                        anyOf {
+                            changeset 'web-apps/projects/worker/**/*'
+                        }
+                    }
+                }
+                stage('package-industry-be'){
+                    when {
+                        anyOf {
+                            changeset 'services/core/admin/**/*'
+                            changeset 'services/core/industry/**/*'
+                            changeset 'services/core/commons/**/*'
+                        }
+                    }
+                }
+                stage('package-industry-ui'){
+                    when {
+                        anyOf {
+                            changeset 'web-apps/projects/industry/**/*'
+                        }
+                    }
+                }
+                stage('package-ancillary'){
+                    when {
+                        anyOf {
+                            changeset 'services/ancillary/**/*'
+                        }
+                    }
+                }
+                stage('package-api'){
+                    when {
+                        anyOf {
+                            changeset 'services/core/api/**/*'
+                        }
+                    }
+                }
+                stage('package-lighthouse'){
+                    when {
+                        anyOf {
+                            changeset 'services/core/api-lighthouse/**/*'
+                        }
+                    }
+                }
+                stage('package-plugins'){
+                    when {
+                        anyOf {
+                            changeset 'plugins/neo4j-mypass/**/*'
+                        }
+                    }
+                }
+            }
+        }
+        stage('package-all-shared'){
+            when {
+                anyOf {
+                    changeset 'services/shared/**/*'
+                    changeset 'services/shared/**/*'
+                    changeset 'web-apps/shared-global/**/*'
+                }
+                not {
+                    changeset 'build.gradle'
+                }
             }
         }
 
