@@ -61,7 +61,7 @@ pipeline {
             stages {
                 stage('open-merge'){
                     when {
-                        branch comparator: 'REGEXP', pattern: '/^feature\\/*./'
+                        branch comparator: 'REGEXP', pattern: '^feature\\/*.'
                         // branch 'feature/1'
                     }
                     steps {
