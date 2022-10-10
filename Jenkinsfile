@@ -161,30 +161,30 @@ pipeline {
                         }
                     }
                 }
-                stage('package-worker-ui'){
-                }
-                stage('package-industry-be'){
-                }
-                stage('package-industry-ui'){
-                }
-                stage('package-ancillary'){
-                }
-                stage('package-api'){
-                }
-                stage('package-lighthouse'){
-                }
-                stage('package-plugins'){
-                }
-                stage('package-all'){
-                }
-                stage('package-all-shared'){
-                }
-                stage(''){
-                }
-                stage(''){
-                }
-                stage(''){
-                }
+                // stage('package-worker-ui'){
+                // }
+                // stage('package-industry-be'){
+                // }
+                // stage('package-industry-ui'){
+                // }
+                // stage('package-ancillary'){
+                // }
+                // stage('package-api'){
+                // }
+                // stage('package-lighthouse'){
+                // }
+                // stage('package-plugins'){
+                // }
+                // stage('package-all'){
+                // }
+                // stage('package-all-shared'){
+                // }
+                // stage(''){
+                // }
+                // stage(''){
+                // }
+                // stage(''){
+                // }
             }
         }
 
