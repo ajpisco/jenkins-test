@@ -61,7 +61,7 @@ pipeline {
             stages {
                 stage('open-merge'){
                     when {
-                        branch comparator: 'REGEXP', pattern: '^feature\\/*'
+                        branch comparator: 'REGEXP', pattern: '^feature\\/*.'
                     }
                     steps {
                         script {
@@ -92,15 +92,9 @@ pipeline {
                 stage('package-worker-be'){
                     when {
                         anyOf {
-                            anyOf {
-                                branch comparator: 'EQUALS', pattern: 'branches'
-                                branch comparator: 'EQUALS', pattern: 'web'
-                            }
-                            anyOf {
-                                changeset 'services/core/worker/**/*'
-                                changeset 'services/core/worker-public/**/*'
-                                changeset 'services/core/commons/**/*'
-                            }
+                            changeset 'services/core/worker/**/*'
+                            changeset 'services/core/worker-public/**/*'
+                            changeset 'services/core/commons/**/*'
                         }
                         not {
                             anyOf {
@@ -162,6 +156,9 @@ pipeline {
                     }
                 }
                 // stage('package-worker-ui'){
+                //     when {
+                //         branch comparator: 'REGEXP', pattern: '^feature\\/*.'
+                //     }
                 // }
                 // stage('package-industry-be'){
                 // }
@@ -178,12 +175,6 @@ pipeline {
                 // stage('package-all'){
                 // }
                 // stage('package-all-shared'){
-                // }
-                // stage(''){
-                // }
-                // stage(''){
-                // }
-                // stage(''){
                 // }
             }
         }
