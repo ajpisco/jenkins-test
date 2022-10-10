@@ -60,11 +60,8 @@ pipeline {
         stage('openMr') {
             stages {
                 stage('open-merge'){
-                    environment {
-                        stageName = 'open-merge'
-                    }
                     when {
-                        branch comparator: 'REGEXP', pattern: '/^feature*\\/*.*/'
+                        branch comparator: 'REGEXP', pattern: '/feature{1}\\/*.*$/'
                     }
                     steps {
                         script {
@@ -82,7 +79,7 @@ pipeline {
                                 ).trim()
                                 sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
                             } catch (err) {
-                                echo "Error on ${stageName} stage: " + err.getMessage()
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                             }
                         }
                     }
@@ -93,9 +90,6 @@ pipeline {
         stage('package') {
             stages {
                 stage('package-worker-be'){
-                    environment {
-                        stageName = 'package-worker-be'
-                    }
                     when {
                         anyOf {
                             anyOf {
@@ -161,11 +155,35 @@ pipeline {
                                 ).trim()
                           
                             } catch (err) {
-                                echo "Error on ${stageName} stage: " + err.getMessage()
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 throw err
                             }
                         }
                     }
+                }
+                stage('package-worker-ui'){
+                }
+                stage('package-industry-be'){
+                }
+                stage('package-industry-ui'){
+                }
+                stage('package-ancillary'){
+                }
+                stage('package-api'){
+                }
+                stage('package-lighthouse'){
+                }
+                stage('package-plugins'){
+                }
+                stage('package-all'){
+                }
+                stage('package-all-shared'){
+                }
+                stage(''){
+                }
+                stage(''){
+                }
+                stage(''){
                 }
             }
         }
