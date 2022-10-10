@@ -160,6 +160,11 @@ pipeline {
                             changeset 'web-apps/projects/worker/**/*'
                         }
                     }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
+                        }
+                    }
                 }
                 stage('package-industry-be'){
                     when {
@@ -169,11 +174,21 @@ pipeline {
                             changeset 'services/core/commons/**/*'
                         }
                     }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
+                        }
+                    }
                 }
                 stage('package-industry-ui'){
                     when {
                         anyOf {
                             changeset 'web-apps/projects/industry/**/*'
+                        }
+                    }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
                         }
                     }
                 }
@@ -183,11 +198,21 @@ pipeline {
                             changeset 'services/ancillary/**/*'
                         }
                     }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
+                        }
+                    }
                 }
                 stage('package-api'){
                     when {
                         anyOf {
                             changeset 'services/core/api/**/*'
+                        }
+                    }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
                         }
                     }
                 }
@@ -197,11 +222,21 @@ pipeline {
                             changeset 'services/core/api-lighthouse/**/*'
                         }
                     }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
+                        }
+                    }
                 }
                 stage('package-plugins'){
                     when {
                         anyOf {
                             changeset 'plugins/neo4j-mypass/**/*'
+                        }
+                    }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
                         }
                     }
                 }
@@ -218,6 +253,11 @@ pipeline {
                     changeset 'build.gradle'
                 }
             }
+                    steps {
+                        script {
+                            echo "${STAGE_NAME}"
+                        }
+                    }
         }
 
 
