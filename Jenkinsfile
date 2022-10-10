@@ -51,8 +51,6 @@ def K8_MGP_CLUSTER_NAMESPACE = 'mgp-ns'
 // def K8_MGP_CLUSTER_STATE = "mgp-mypass-com"
 def K8_KUBECTL_VERSION = '1.1.7'
 
-def GRADLE_USER_HOME="${env.WORKSPACE}/.gradle"
-
 pipeline {
     agent any
 
@@ -78,6 +76,8 @@ pipeline {
                                     returnStdout: true
                                 ).trim()
                                 sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
+
+                                sh 'export GRADLE_USER_HOME=$(pwd)/.gradle'
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                             }
@@ -110,16 +110,6 @@ pipeline {
                     steps {
                         script {
                             try {
-                                a = sh(
-                                    script: 'ls -l',
-                                    returnStdout: true
-                                ).trim()
-                                echo "${a}"
-                                b = sh(
-                                    script: 'pwd',
-                                    returnStdout: true
-                                ).trim()
-                                echo "${b}"
                                 
                                 sh(
                                     script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
