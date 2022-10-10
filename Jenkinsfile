@@ -65,6 +65,8 @@ pipeline {
                         script {
                             // try block to prevent the build to stop in case of error
                             try {
+                                sh 'export GRADLE_USER_HOME=$(pwd)/.gradle'
+
                                 // HOST="${CI_PROJECT_URL}"
                                 // CI_PROJECT_ID=${CI_PROJECT_ID}
                                 // GITLAB_USER_ID=${GITLAB_USER_ID}
@@ -76,8 +78,6 @@ pipeline {
                                     returnStdout: true
                                 ).trim()
                                 sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
-
-                                sh 'export GRADLE_USER_HOME=$(pwd)/.gradle'
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                             }
