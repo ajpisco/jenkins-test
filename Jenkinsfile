@@ -92,7 +92,7 @@ pipeline {
                     when {
                         anyOf{
                             triggeredBy cause: "UserIdCause"
-                            // triggeredBy 'SCMTrigger'                            
+                            triggeredBy 'SCMTrigger'                            
                         }
                     }
                     steps {
