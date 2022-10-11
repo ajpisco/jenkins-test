@@ -1,4 +1,3 @@
-echo env
 def CI_REGISTRY_WORKER_BE_IMAGE = 'worker-be'
 def CI_REGISTRY_WORKER_UI_IMAGE = 'worker-ui'
 def CI_REGISTRY_INDUSTRY_BE_IMAGE = 'industry-be'
@@ -10,7 +9,7 @@ def CI_REGISTRY = ''
 def CI_REGISTRY_NAMESPACE = ''
 def CI_COMMIT_REF_SLUG = slugify(BRANCH_NAME)
 def CI_COMMIT_REF_NAME = BRANCH_NAME
-def CI_COMMIT_SHORT_SHA = GIT_COMMIT.substring(0,7)
+// def CI_COMMIT_SHORT_SHA = GIT_COMMIT.substring(0,7)
 // def K8_CLUSTER_NAME = "mgd"
 def K8_DEV_CLUSTER_NAME = 'mgd'
 def K8_DEV_CLUSTER_NAMESPACE = 'dev-ns'
@@ -71,6 +70,8 @@ pipeline {
                         script {
                             // try block to prevent the build to stop in case of error
                             try {
+                                sh 'printenv'
+
                                 sh 'export GRADLE_USER_HOME=$(pwd)/.gradle'
 
                                 // HOST="${CI_PROJECT_URL}"
