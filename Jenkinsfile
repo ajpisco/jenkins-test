@@ -75,6 +75,8 @@ pipeline {
                                 // PRIVATE_TOKEN=${PRIVATE_TOKEN}
                                 sh "export CI_COMMIT_REF_NAME=${BRANCH_NAME}"
 
+                                sh "export CI_COMMIT_REF_SLUG=${GIT_COMMIT}"
+
                                 sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
