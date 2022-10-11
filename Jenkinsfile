@@ -671,7 +671,7 @@ pipeline {
 }
 
 void buildTrigger() {
-    println currentBuild.getBuildCauses()
+    println currentBuild.getBuildCauses()[0]
     // // started by commit
     // echo currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
     // // started by timer
