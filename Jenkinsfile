@@ -77,7 +77,7 @@ pipeline {
                                 // PRIVATE_TOKEN=${PRIVATE_TOKEN}
                                 sh "export CI_COMMIT_REF_NAME=${BRANCH_NAME}"
 
-                                sh "export CI_COMMIT_REF_SLUG=${GIT_COMMIT}"
+                                sh "export CI_COMMIT_REF_SLUG="+ slugify(BRANCH_NAME)
 
                                 sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
                             } catch (err) {
@@ -1391,4 +1391,13 @@ pipeline {
             }
         }
     }
+}
+
+String slugify(String origin){
+    String slug = origin.toLowerCase()
+    slug = slug.replaceAll("[^\w\s-/]", "")
+    slug = slug.replaceAll("[\s/_-]+", "-")
+    slug = slug.replaceAll("^-+|-+$", "")
+
+    return slug
 }
