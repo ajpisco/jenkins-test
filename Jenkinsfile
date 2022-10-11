@@ -9,7 +9,7 @@ def CI_REGISTRY = ''
 def CI_REGISTRY_NAMESPACE = ''
 def CI_COMMIT_REF_SLUG = slugify(BRANCH_NAME)
 def CI_COMMIT_REF_NAME = BRANCH_NAME
-def CI_COMMIT_SHORT_SHA = env.GIT_COMMIT.substring(0,7)
+def CI_COMMIT_SHORT_SHA = ''
 // def K8_CLUSTER_NAME = "mgd"
 def K8_DEV_CLUSTER_NAME = 'mgd'
 def K8_DEV_CLUSTER_NAMESPACE = 'dev-ns'
@@ -78,9 +78,8 @@ pipeline {
                                 // CI_PROJECT_ID=${CI_PROJECT_ID}
                                 // GITLAB_USER_ID=${GITLAB_USER_ID}
                                 // PRIVATE_TOKEN=${PRIVATE_TOKEN}
-                                sh "export CI_COMMIT_REF_NAME=${BRANCH_NAME}"
 
-                                sh "export CI_COMMIT_REF_SLUG="+ slugify(BRANCH_NAME)
+                                sh "export CI_COMMIT_SHORT_SHA="+ GIT_COMMIT.substring(0,7)
 
                                 sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
                             } catch (err) {
