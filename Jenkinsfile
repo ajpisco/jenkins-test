@@ -673,9 +673,18 @@ pipeline {
 void buildTrigger() {
     println currentBuild.getBuildCauses()[0]
     // started by commit
+    if(currentBuild.getBuildCauses('jenkins.branch.BranchEventCause').size() > 0){
+        echo 'started by commit'
+    }
     println currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
     // started by timer
+    if(currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0){
+        echo 'started by commit'
+    }
     println currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause')
     // started by user
+    if(currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size() > 0){
+        echo 'started by commit'
+    }
     println currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
 }
