@@ -789,11 +789,11 @@ pipeline {
         }
         
         stage('clean') {
-            agent {
-                docker {
-                    image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
-                }
-            }
+            // agent {
+            //     docker {
+            //         image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
+            //     }
+            // }
             stages {
                 stage('clean_deployment'){
                     when {
@@ -883,11 +883,11 @@ pipeline {
         }
         
         stage('backup') {
-            agent {
-                docker {
-                    image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
-                }
-            }
+            // agent {
+            //     docker {
+            //         image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
+            //     }
+            // }
             stages {
                 stage('backup_production'){
                     when {
