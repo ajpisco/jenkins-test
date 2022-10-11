@@ -934,11 +934,11 @@ pipeline {
         }
         
         stage('deploy') {
-            agent {
-                docker {
-                    image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
-                }
-            }
+            // agent {
+            //     docker {
+            //         image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
+            //     }
+            // }
             stages {
                 stage('pre-deploy'){
                     steps {
