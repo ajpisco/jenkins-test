@@ -65,26 +65,7 @@ pipeline {
                         script {
                             // try block to prevent the build to stop in case of error
                             try {
-                                a = sh(
-                                    script: 'ls -l',
-                                    returnStdout: true
-                                ).trim()
-                                echo "${a}"
-                                b =sh(
-                                    script: 'pwd',
-                                    returnStdout: true
-                                ).trim()
-                                echo "${b}"
-                                c =sh(
-                                    script: 'echo $PATH',
-                                    returnStdout: true
-                                ).trim()
-                                echo "${c}"
-                                d =sh(
-                                    script: 'env',
-                                    returnStdout: true
-                                ).trim()
-                                echo "${d}"
+                                buildTrigger()
                                 sh 'export GRADLE_USER_HOME=$(pwd)/.gradle'
 
                                 // HOST="${CI_PROJECT_URL}"
@@ -100,6 +81,29 @@ pipeline {
                                 sh 'aio/env-scope/auto-merge-request.sh' // The name of the script
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('install') {
+            stages {
+                stage('install-dependencies'){
+                    when {
+                        branch comparator: 'REGEXP', pattern: '^feature\\/*.'
+                    }
+                    steps {
+                        script {
+                            try {
+                                sh 'cd web-apps'
+                                sh(
+                                    script: 'npm install',
+                                    returnStdout: true
+                                ).trim()
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
                             }
                         }
                     }
@@ -168,7 +172,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                throw err
+                                // throw err
                             }
                         }
                     }
@@ -181,7 +185,43 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "${STAGE_NAME}"
+                            try {
+                                sh(
+                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh(
+                                    script: 'gradle :web-apps:buildWorker',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh 'cd aio/env-scope'
+                                sh(
+                                    script: 'docker-compose -f docker-compose-all.yml build worker-ui',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
                         }
                     }
                 }
@@ -195,7 +235,47 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "${STAGE_NAME}"
+                            try {
+                                sh(
+                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh(
+                                    script: 'gradle :services:core:industry:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'gradle :services:core:admin:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh 'cd aio/env-scope'
+                                sh(
+                                    script: 'docker-compose -f docker-compose-all.yml build industry-be',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
                         }
                     }
                 }
@@ -207,7 +287,43 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "${STAGE_NAME}"
+                            try {
+                                sh(
+                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh(
+                                    script: 'gradle :web-apps:buildIndustry',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh 'cd aio/env-scope'
+                                sh(
+                                    script: 'docker-compose -f docker-compose-all.yml build industry-ui',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
                         }
                     }
                 }
@@ -219,7 +335,43 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "${STAGE_NAME}"
+                            try {
+                                sh(
+                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh(
+                                    script: 'gradle :services:ancillary:messaging:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh 'cd aio/env-scope'
+                                sh(
+                                    script: 'docker-compose -f docker-compose-all.yml build ancillary',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
                         }
                     }
                 }
@@ -231,7 +383,48 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "${STAGE_NAME}"
+                            try {
+                                sh(
+                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                                    returnStdout: true
+                                ).trim()
+                                sh 'rm -rf aio/env-scope/service/*.* aio/env-scope/web-apps/*.* aio/env-scope/api-docs/*.*'
+                                
+                                sh(
+                                    script: 'gradle :services:core:api:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'gradle :services:core:api:generateOpenApiDocs',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh 'cd aio/env-scope'
+                                sh(
+                                    script: 'docker-compose -f docker-compose-all.yml build api',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_API_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_API_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
                         }
                     }
                 }
@@ -243,7 +436,48 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "${STAGE_NAME}"
+                            try {
+                                sh(
+                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                                    returnStdout: true
+                                ).trim()
+                                sh 'rm -rf aio/env-scope/services/core/api-lighthouse/*.* aio/env-scope/api-lighthouse-docs/*.*'
+                                
+                                sh(
+                                    script: 'gradle :services:core:api-lighthouse:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'gradle :services:core:api-lighthouse:generateOpenApiDocs',
+                                    returnStdout: true
+                                ).trim()
+                                
+                                sh 'cd aio/env-scope'
+                                sh(
+                                    script: 'docker-compose -f docker-compose-all.yml build api-lighthouse',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_LIGHTHOUSE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_LIGHTHOUSE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker tag ${CI_REGISTRY_LIGHTHOUSE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_LIGHTHOUSE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_LIGHTHOUSE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_LIGHTHOUSE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
                         }
                     }
                 }
@@ -255,7 +489,26 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "${STAGE_NAME}"
+                            try {
+                                sh 'rm -rf aio/env-scope/api-docs/*.*'
+                                
+                                sh(
+                                    script: 'gradle :plugins:neo4j-mypass:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_REGISTRY_LATEST -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                                    returnStdout: true
+                                ).trim()
+                          
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
                         }
                     }
                 }
@@ -272,11 +525,139 @@ pipeline {
                     changeset 'build.gradle'
                 }
             }
-                    steps {
-                        script {
-                            echo "${STAGE_NAME}"
-                        }
+            steps {
+                script {
+                    try {
+                        sh(
+                            script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+                            returnStdout: true
+                        ).trim()
+                        
+                        sh(
+                            script: 'gradle build --profile -DskipTests=true -Dcheckstyle.skip=true -x test',
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: 'gradle :services:core:api:generateOpenApiDocs',
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_REGISTRY_LATEST -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                            returnStdout: true
+                        ).trim()
+                        
+                        sh 'cd aio/env-scope'
+                        sh(
+                            script: 'docker-compose -f docker-compose-all.yml build --force-rm --no-cache',
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_INDUSTRY_UI_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_ANCILLARY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_API_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker tag ${CI_REGISTRY_API_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
+                            returnStdout: true
+                        ).trim()
+                        sh(
+                            script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_API_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
+                            returnStdout: true
+                        ).trim()
+                    
+                    } catch (err) {
+                        echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                        // throw err
                     }
+                }
+            }
         }
 
 
@@ -289,6 +670,11 @@ pipeline {
     }
 }
 
-String getGitBranchName() {
-    return sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+void buildTrigger() {
+    // started by commit
+    echo currentBuild.getBuildCauses('jenkins.branch.BranchEventCause') + "\n"
+    // started by timer
+    echo currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause') + "\n"
+    // started by user
+    echo currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause') + "\n"
 }
