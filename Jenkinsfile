@@ -65,7 +65,6 @@ pipeline {
                         script {
                             // try block to prevent the build to stop in case of error
                             try {
-                                buildTrigger()
                                 sh 'export GRADLE_USER_HOME=$(pwd)/.gradle'
 
                                 // HOST="${CI_PROJECT_URL}"
@@ -95,7 +94,6 @@ pipeline {
                             triggeredBy cause: "UserIdCause"
                             // triggeredBy 'SCMTrigger'                            
                         }
-                        branch comparator: 'REGEXP', pattern: '^feature\\/*.'
                     }
                     steps {
                         script {
