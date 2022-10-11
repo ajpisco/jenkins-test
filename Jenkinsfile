@@ -729,16 +729,18 @@ pipeline {
         }
 
         stage('test-ui') {
-            steps {
-                script {
-                    sh(
-                        script: "apk add chromium",
-                        returnStdout: true
-                    ).trim()
-                    sh 'export CHROME_BIN=/usr/bin/chromium-browser'
-                }
-            }
             stages {
+                stage('pre-test-ui'){
+                    steps {
+                        script {
+                            sh(
+                                script: "apk add chromium",
+                                returnStdout: true
+                            ).trim()
+                            sh 'export CHROME_BIN=/usr/bin/chromium-browser'
+                        }
+                    }
+                }
                 stage('test-industry'){
                     when {
                         allOf {
@@ -937,12 +939,14 @@ pipeline {
                     image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
                 }
             }
-            steps {
-                script {
-                    sh "cd aio/env-scope"
-                }
-            }
             stages {
+                stage('pre-deploy'){
+                    steps {
+                        script {
+                            sh "cd aio/env-scope"
+                        }
+                    }
+                }
                 stage('deploy_develop'){
                     when {
                         anyOf {
