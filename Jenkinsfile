@@ -1395,8 +1395,8 @@ pipeline {
 
 String slugify(String origin){
     String slug = origin.toLowerCase()
-    slug = slug.replaceAll("[^\w\s-/]", "")
-    slug = slug.replaceAll("[\s/_-]+", "-")
+    slug = slug.replaceAll("[^\\w\\s-/]", "")
+    slug = slug.replaceAll("[\\s/_-]+", "-")
     slug = slug.replaceAll("^-+|-+$", "")
 
     return slug
