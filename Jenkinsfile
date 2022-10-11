@@ -1,4 +1,3 @@
-/* groovylint-disable NestedBlockDepth */
 def CI_REGISTRY_WORKER_BE_IMAGE = 'worker-be'
 def CI_REGISTRY_WORKER_UI_IMAGE = 'worker-ui'
 def CI_REGISTRY_INDUSTRY_BE_IMAGE = 'industry-be'
@@ -6,6 +5,7 @@ def CI_REGISTRY_INDUSTRY_UI_IMAGE = 'industry-ui'
 def CI_REGISTRY_ANCILLARY_IMAGE = 'postman-be'
 def CI_REGISTRY_API_IMAGE = 'api-be'
 def CI_REGISTRY_LATEST = 'latest'
+def CI_REGISTRY = ''
 // def K8_CLUSTER_NAME = "mgd"
 def K8_DEV_CLUSTER_NAME = 'mgd'
 def K8_DEV_CLUSTER_NAMESPACE = 'dev-ns'
@@ -772,7 +772,6 @@ pipeline {
                     }
                     steps {
                         script {
-                            // try block to prevent the build to stop in case of error
                             try {
                                 sh 'cd web-apps'
                                 sh(
