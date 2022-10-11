@@ -6,6 +6,7 @@ def CI_REGISTRY_ANCILLARY_IMAGE = 'postman-be'
 def CI_REGISTRY_API_IMAGE = 'api-be'
 def CI_REGISTRY_LATEST = 'latest'
 def CI_REGISTRY = ''
+def CI_REGISTRY_NAMESPACE = ''
 // def K8_CLUSTER_NAME = "mgd"
 def K8_DEV_CLUSTER_NAME = 'mgd'
 def K8_DEV_CLUSTER_NAMESPACE = 'dev-ns'
