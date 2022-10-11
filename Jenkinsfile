@@ -1,3 +1,4 @@
+echo env
 def CI_REGISTRY_WORKER_BE_IMAGE = 'worker-be'
 def CI_REGISTRY_WORKER_UI_IMAGE = 'worker-ui'
 def CI_REGISTRY_INDUSTRY_BE_IMAGE = 'industry-be'
