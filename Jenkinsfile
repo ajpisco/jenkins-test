@@ -671,11 +671,11 @@ pipeline {
 }
 
 void buildTrigger() {
-    echo currentBuild.getBuildCauses()
-    // started by commit
-    echo currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
-    // started by timer
-    echo currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause')
-    // started by user
-    echo currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+    println currentBuild.getBuildCauses()
+    // // started by commit
+    // echo currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
+    // // started by timer
+    // echo currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause')
+    // // started by user
+    // echo currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
 }
