@@ -91,6 +91,10 @@ pipeline {
             stages {
                 stage('install-dependencies'){
                     when {
+                        anyOf{
+                            triggeredBy cause: "UserIdCause"
+                            // triggeredBy 'SCMTrigger'                            
+                        }
                         branch comparator: 'REGEXP', pattern: '^feature\\/*.'
                     }
                     steps {
@@ -670,21 +674,26 @@ pipeline {
     }
 }
 
-void buildTrigger() {
-    println currentBuild.getBuildCauses()[0]
-    // started by commit
-    if(currentBuild.getBuildCauses('jenkins.branch.BranchEventCause').size() > 0){
-        echo 'started by commit'
-    }
-    println currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
-    // started by timer
-    if(currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0){
-        echo 'started by commit'
-    }
-    println currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause')
-    // started by user
+// Check if build was started by user
+boolean userBuild() {
     if(currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size() > 0){
-        echo 'started by commit'
+        return true
     }
-    println currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+    return false
+}
+
+// Check if build was started by push
+boolean pushBuild() {
+    if(currentBuild.getBuildCauses('jenkins.branch.BranchEventCause').size() > 0){
+        return true
+    }
+    return false
+}
+
+// Check if build was started by timer
+boolean timerBuild() {
+    if(currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0){
+        return true
+    }
+    return false
 }
