@@ -582,7 +582,7 @@ pipeline {
                 allOf{
                     anyOf {
                         changeset 'services/shared/**/*'
-                        changeset 'services/shared/**/*'
+                        changeset 'web-apps/projects/shared/**/*'
                         changeset 'web-apps/shared-global/**/*'
                     }
                     anyOf {
@@ -733,10 +733,10 @@ pipeline {
                 stage('pre-test-ui'){
                     steps {
                         script {
-                            sh(
-                                script: "apk add chromium",
-                                returnStdout: true
-                            ).trim()
+                            // sh(
+                            //     script: "apk add chromium",
+                            //     returnStdout: true
+                            // ).trim()
                             sh 'export CHROME_BIN=/usr/bin/chromium-browser'
                         }
                     }
