@@ -1092,34 +1092,34 @@ pipeline {
                         }
                     }
                 }
-                stage('deploy_eap'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "eap"
-                                url = "https://showcase.eap.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_EAP_CLUSTER_NAMESPACE} ${K8_EAP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_EAP_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
+                // stage('deploy_eap'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "eap"
+                //                 url = "https://showcase.eap.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_EAP_CLUSTER_NAMESPACE} ${K8_EAP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_EAP_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
                 // stage('deploy_tsb'){
                 //     when {
                 //         anyOf {
