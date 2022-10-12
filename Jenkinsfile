@@ -812,15 +812,16 @@ pipeline {
                             try {
                                 name = "development"
                                 url = "https://showcase.develop.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_DEV_CLUSTER_NAMESPACE} ${K8_DEV_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_DEV_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "dev",
+                                    K8_DEV_CLUSTER_NAMESPACE,
+                                    K8_DEV_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -840,15 +841,16 @@ pipeline {
                             try {
                                 name = "staging"
                                 url = "https://showcase.sit.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_SIT_CLUSTER_NAMESPACE} ${K8_SIT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_SIT_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "sit",
+                                    K8_SIT_CLUSTER_NAMESPACE,
+                                    K8_SIT_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -868,15 +870,16 @@ pipeline {
                             try {
                                 name = "qa"
                                 url = "https://showcase.qa.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_QA_CLUSTER_NAMESPACE} ${K8_QA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_QA_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "qa",
+                                    K8_QA_CLUSTER_NAMESPACE,
+                                    K8_QA_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -896,15 +899,16 @@ pipeline {
                             try {
                                 name = "pih"
                                 url = "https://showcase.pih.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_PIH_CLUSTER_NAMESPACE} ${K8_PIH_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_PIH_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "pih",
+                                    K8_PIH_CLUSTER_NAMESPACE,
+                                    K8_PIH_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -924,15 +928,16 @@ pipeline {
                             try {
                                 name = "mia"
                                 url = "https://showcase.mia.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_MIA_CLUSTER_NAMESPACE} ${K8_MIA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MIA_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "mia",
+                                    K8_MIA_CLUSTER_NAMESPACE,
+                                    K8_MIA_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -952,15 +957,16 @@ pipeline {
                             try {
                                 name = "eap"
                                 url = "https://showcase.eap.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_EAP_CLUSTER_NAMESPACE} ${K8_EAP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_EAP_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "eap",
+                                    K8_EAP_CLUSTER_NAMESPACE,
+                                    K8_EAP_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -980,15 +986,16 @@ pipeline {
                             try {
                                 name = "Training and Sandbox"
                                 url = "https://industry.tsb.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_TSB_CLUSTER_NAMESPACE} ${K8_TSB_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_TSB_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "tsb",
+                                    K8_TSB_CLUSTER_NAMESPACE,
+                                    K8_TSB_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1008,15 +1015,16 @@ pipeline {
                             try {
                                 name = "uat"
                                 url = "https://mypass.uat.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_UAT_CLUSTER_NAMESPACE} ${K8_UAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_UAT_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "uat",
+                                    K8_UAT_CLUSTER_NAMESPACE,
+                                    K8_UAT_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1036,15 +1044,16 @@ pipeline {
                             try {
                                 name = "BHP Pilot Environment"
                                 url = "https://industry.bhp1buat.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_BHP1B_UAT_CLUSTER_NAMESPACE} ${K8_BHP1B_UAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_BHP1B_UAT_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "bhp1buat",
+                                    K8_BHP1B_UAT_CLUSTER_NAMESPACE,
+                                    K8_BHP1B_UAT_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1064,15 +1073,16 @@ pipeline {
                             try {
                                 name = "BHP UAT Environment"
                                 url = "https://industry.bhpuat.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_BHPUAT_CLUSTER_NAMESPACE} ${K8_BHPUAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_BHPUAT_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "bhpuat",
+                                    K8_BHPUAT_CLUSTER_NAMESPACE,
+                                    K8_BHPUAT_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1092,15 +1102,16 @@ pipeline {
                             try {
                                 name = "UAT2 Environment"
                                 url = "https://industry.uat2.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_UAT2_CLUSTER_NAMESPACE} ${K8_UAT2_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_UAT2_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "uat2",
+                                    K8_UAT2_CLUSTER_NAMESPACE,
+                                    K8_UAT2_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1120,15 +1131,16 @@ pipeline {
                             try {
                                 name = "MGU"
                                 url = "https://industry.mgu.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_MGU_CLUSTER_NAMESPACE} ${K8_MGU_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MGU_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "mgu",
+                                    K8_MGU_CLUSTER_NAMESPACE,
+                                    K8_MGU_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1148,15 +1160,16 @@ pipeline {
                             try {
                                 name = "BHP DEV Environment"
                                 url = "https://industry.dev2.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_DEV2_CLUSTER_NAMESPACE} ${K8_DEV2_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_DEV2_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "dev2",
+                                    K8_DEV2_CLUSTER_NAMESPACE,
+                                    K8_DEV2_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1181,15 +1194,16 @@ pipeline {
                                     script: "aws s3 ls \"s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar\" && aws s3 cp s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar s3://plugins.example.com/com/mypass/neo4j-mypass/latest/neo4j-mypass-latest.jar",
                                     returnStdout: true
                                 ).trim()
-                                sh(
-                                    script: "bash deploy.sh mgp ${K8_MGP_CLUSTER_NAMESPACE} ${K8_MGP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MGP_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
+
+                                scriptDeploy(name,
+                                    url,
+                                    "mgp",
+                                    K8_MGP_CLUSTER_NAMESPACE,
+                                    K8_MGP_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -1198,45 +1212,44 @@ pipeline {
                     }
                 }
 
-//                 // stage('deploy_production'){
-//                 //     when {
-//                 //         allOf {
-//                 //             triggeredBy cause: "UserIdCause"
-//                 //             branch 'master'
-//                 //         }           
-//                 //     }
-//                 //     steps {
-//                 //         script {
-//                 //             try {
-//                 //                 name = "production"
-//                 //                 url = "https://mypass.example.com"
-//                 //                 echo "Deploy to production evironment"
-//                 //                 sh(
-//                 //                     script: "aws s3 cp s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar s3://plugins.example.com/com/mypass/neo4j-mypass/latest/neo4j-mypass-latest.jar",
-//                 //                     returnStdout: true
-//                 //                 ).trim()
-//                 //                 sh(
-//                 //                     script: "kops export kubecfg --name ${K8_PRO_CLUSTER_NAME} --state=s3://${K8_PRO_CLUSTER_STATE}",
-//                 //                     returnStdout: true
-//                 //                 ).trim()
-//                 //                 sh(
-//                 //                     script: "bash deploy.sh ${K8_PRO_CLUSTER_NAME} production ${K8_PRO_CLUSTER_NAMESPACE} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-//                 //                     returnStdout: true
-//                 //                 ).trim()
-//                 //                 sh 'sleep 90'
+                stage('deploy_production'){
+                    when {
+                        allOf {
+                            triggeredBy cause: "UserIdCause"
+                            branch 'master'
+                        }           
+                    }
+                    steps {
+                        script {
+                            try {
+                                name = "production"
+                                url = "https://mypass.example.com"
+                                echo "Deploy to production evironment"
+                                sh(
+                                    script: "aws s3 cp s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar s3://plugins.example.com/com/mypass/neo4j-mypass/latest/neo4j-mypass-latest.jar",
+                                    returnStdout: true
+                                ).trim()
+                                sh(
+                                    script: "kops export kubecfg --name ${K8_PRO_CLUSTER_NAME} --state=s3://${K8_PRO_CLUSTER_STATE}",
+                                    returnStdout: true
+                                ).trim()
 
-//                 //                 sh(
-//                 //                     script: "bash deploy-apigateway.sh pro ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
-//                 //                     returnStdout: true
-//                 //                 ).trim()
-//                 //             } catch (err) {
-//                 //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-//                 //                 // throw err
-//                 //             }
-//                 //         }
-//                 //     }
-//                 // }
-
+                                scriptDeploy(name,
+                                    url,
+                                    "production",
+                                    K8_PRO_CLUSTER_NAMESPACE,
+                                    K8_PRO_CLUSTER_NAME,
+                                    CI_COMMIT_REF_NAME,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
+                                    
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -1288,6 +1301,26 @@ def postPackage(String buildName,
     ).trim()
     sh(
         script: "docker push ${ciRegistry}/${ciRegistryNamespace}/${ciRegistryProductImage}:${ciCommitRefSlug}-${ciRegistryLatest}",
+        returnStdout: true
+    ).trim()
+}
+
+def scriptDeploy(String name,
+                String url,
+                String env,
+                String k8ProductEnvClusterNamespace,
+                String k8ProductEnvClusterName,
+                String ciCommitRefName,
+                String ciCommitRefSlug,
+                String ciCommitShortSha){
+                    
+    sh(
+        script: "bash deploy.sh ${env} ${k8ProductEnvClusterNamespace} ${k8ProductEnvClusterName} ${ciCommitRefSlug} ${ciCommitRefName} ${ciCommitShortSha}",
+        returnStdout: true
+    ).trim()
+    sh 'sleep 90'
+    sh(
+        script: "bash deploy-apigateway.sh ${env} ${ciCommitRefSlug}-${ciCommitShortSha} ${k8ProductEnvClusterName}",
         returnStdout: true
     ).trim()
 }
