@@ -964,27 +964,29 @@ pipeline {
                             triggeredBy cause: "BranchEventCause"
                         }           
                     }
+                    def deployStage(){
+                        steps {
+                            script {
+                                try {
+                                    name = "development"
+                                    url = "https://showcase.develop.example.com"
+                                    sh(
+                                        script: "bash deploy.sh dev ${K8_DEV_CLUSTER_NAMESPACE} ${K8_DEV_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                                        returnStdout: true
+                                    ).trim()
+                                    sh 'sleep 90'
+                                    sh(
+                                        script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_DEV_CLUSTER_NAME}",
+                                        returnStdout: true
+                                    ).trim()
+                                } catch (err) {
+                                    echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                    // throw err
+                                }
+                            }
+                        }
+                    }
                     deployStage()
-                    // steps {
-                    //     script {
-                    //         try {
-                    //             name = "development"
-                    //             url = "https://showcase.develop.example.com"
-                    //             sh(
-                    //                 script: "bash deploy.sh dev ${K8_DEV_CLUSTER_NAMESPACE} ${K8_DEV_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                    //                 returnStdout: true
-                    //             ).trim()
-                    //             sh 'sleep 90'
-                    //             sh(
-                    //                 script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_DEV_CLUSTER_NAME}",
-                    //                 returnStdout: true
-                    //             ).trim()
-                    //         } catch (err) {
-                    //             echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                    //             // throw err
-                    //         }
-                    //     }
-                    // }
                 }
                 // stage('deploy_staging'){
                 //     when {
@@ -1423,28 +1425,4 @@ def testStage(){
             }
         }
     }
-}
-
-
-def deployStage(){
-                    steps {
-                        script {
-                            try {
-                                name = "development"
-                                url = "https://showcase.develop.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_DEV_CLUSTER_NAMESPACE} ${K8_DEV_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_DEV_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
 }
