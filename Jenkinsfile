@@ -943,7 +943,10 @@ pipeline {
             }
         }
         
-        deployStage()
+        stage('deploy') {
+            deployStage()
+        }
+        
         
         // stage('deploy') {
         //     // agent {
@@ -1427,7 +1430,7 @@ def testStage(){
 }
 
 def deployStage(){
-    stage('deploy') {
+    // stage('deploy') {
         // agent {
         //     docker {
         //         image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
@@ -1839,5 +1842,5 @@ def deployStage(){
                 }
             }
         }
-    }
+    // }
 }
