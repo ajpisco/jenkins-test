@@ -185,7 +185,7 @@ pipeline {
                                 
                                 sh 'cd aio/env-scope'
 
-                                def postPackage("build worker-be",
+                                postPackage("build worker-be",
                                     CI_REGISTRY_WORKER_BE_IMAGE,
                                     CI_REGISTRY_LATEST,
                                     CI_REGISTRY,
