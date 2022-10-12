@@ -56,12 +56,14 @@ def K8_MGP_CLUSTER_NAMESPACE = 'mgp-ns'
 def K8_KUBECTL_VERSION = '1.1.7'
 
 @Library('dummy') _
-openMrStage ''
+
 
 pipeline {
     agent any
 
     stages {
+
+        openMrStage ''
         // stage('openMr') {
         //     stages {
         //         stage('open-merge'){
