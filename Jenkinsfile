@@ -184,26 +184,14 @@ pipeline {
                                 ).trim()
                                 
                                 sh 'cd aio/env-scope'
-                                sh(
-                                    script: 'docker-compose -f docker-compose-all.yml build worker-be',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: "docker tag ${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: "docker tag ${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_REGISTRY_LATEST} ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: "docker push ${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/${CI_REGISTRY_WORKER_BE_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_REGISTRY_LATEST}",
-                                    returnStdout: true
-                                ).trim()
+
+                                def postPackage("build worker-be",
+                                    CI_REGISTRY_WORKER_BE_IMAGE,
+                                    CI_REGISTRY_LATEST,
+                                    CI_REGISTRY,
+                                    CI_REGISTRY_NAMESPACE,
+                                    CI_COMMIT_REF_SLUG,
+                                    CI_COMMIT_SHORT_SHA)
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
@@ -1391,6 +1379,36 @@ String slugify(String origin){
 def prePackage(){
     sh(
         script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+        returnStdout: true
+    ).trim()
+}
+
+def postPackage(String buildName,
+                String ciRegistryProductImage,
+                String ciRegistryLatest,
+                String ciRegistry,
+                String ciRegistryNamespace,
+                String ciCommitRefSlug,
+                String ciCommitShortSha){
+
+    sh(
+        script: "docker-compose -f docker-compose-all.yml build ${buildName}",
+        returnStdout: true
+    ).trim()
+    sh(
+        script: "docker tag ${ciRegistryProductImage}:${ciRegistryLatest} ${ciRegistry}/${ciRegistryNamespace}/${ciRegistryProductImage}:${ciCommitRefSlug}-${ciCommitShortSha}",
+        returnStdout: true
+    ).trim()
+    sh(
+        script: "docker tag ${ciRegistryProductImage}:${ciRegistryLatest} ${ciRegistry}/${ciRegistryNamespace}/${ciRegistryProductImage}:${ciCommitRefSlug}-${ciRegistryLatest}",
+        returnStdout: true
+    ).trim()
+    sh(
+        script: "docker push ${ciRegistry}/${ciRegistryNamespace}/${ciRegistryProductImage}:${ciCommitRefSlug}-${ciCommitShortSha}",
+        returnStdout: true
+    ).trim()
+    sh(
+        script: "docker push ${ciRegistry}/${ciRegistryNamespace}/${ciRegistryProductImage}:${ciCommitRefSlug}-${ciRegistryLatest}",
         returnStdout: true
     ).trim()
 }
