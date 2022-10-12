@@ -757,7 +757,6 @@ pipeline {
                     }
                     steps {
                         script {
-                            // try block to prevent the build to stop in case of error
                             try {
                                 sh 'cd web-apps'
                                 sh(
@@ -981,90 +980,90 @@ pipeline {
                         }
                     }
                 }
-                // stage('deploy_staging'){
-                //     when {
-                //         anyOf {
-                //             triggeredBy cause: "UserIdCause"
-                //             triggeredBy cause: "BranchEventCause"
-                //         }           
-                //     }
-                //     steps {
-                //         script {
-                //             try {
-                //                 name = "staging"
-                //                 url = "https://showcase.sit.example.com"
-                //                 sh(
-                //                     script: "bash deploy.sh dev ${K8_SIT_CLUSTER_NAMESPACE} ${K8_SIT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                //                     returnStdout: true
-                //                 ).trim()
-                //                 sh 'sleep 90'
-                //                 sh(
-                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_SIT_CLUSTER_NAME}",
-                //                     returnStdout: true
-                //                 ).trim()
-                //             } catch (err) {
-                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                //                 // throw err
-                //             }
-                //         }
-                //     }
-                // }
-                // stage('deploy_qa'){
-                //     when {
-                //         anyOf {
-                //             triggeredBy cause: "UserIdCause"
-                //             triggeredBy cause: "BranchEventCause"
-                //         }           
-                //     }
-                //     steps {
-                //         script {
-                //             try {
-                //                 name = "qa"
-                //                 url = "https://showcase.qa.example.com"
-                //                 sh(
-                //                     script: "bash deploy.sh dev ${K8_QA_CLUSTER_NAMESPACE} ${K8_QA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                //                     returnStdout: true
-                //                 ).trim()
-                //                 sh 'sleep 90'
-                //                 sh(
-                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_QA_CLUSTER_NAME}",
-                //                     returnStdout: true
-                //                 ).trim()
-                //             } catch (err) {
-                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                //                 // throw err
-                //             }
-                //         }
-                //     }
-                // }
-                // stage('deploy_pih'){
-                //     when {
-                //         anyOf {
-                //             triggeredBy cause: "UserIdCause"
-                //             triggeredBy cause: "BranchEventCause"
-                //         }           
-                //     }
-                //     steps {
-                //         script {
-                //             try {
-                //                 name = "pih"
-                //                 url = "https://showcase.pih.example.com"
-                //                 sh(
-                //                     script: "bash deploy.sh dev ${K8_PIH_CLUSTER_NAMESPACE} ${K8_PIH_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                //                     returnStdout: true
-                //                 ).trim()
-                //                 sh 'sleep 90'
-                //                 sh(
-                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_PIH_CLUSTER_NAME}",
-                //                     returnStdout: true
-                //                 ).trim()
-                //             } catch (err) {
-                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                //                 // throw err
-                //             }
-                //         }
-                //     }
-                // }
+                stage('deploy_staging'){
+                    when {
+                        anyOf {
+                            triggeredBy cause: "UserIdCause"
+                            triggeredBy cause: "BranchEventCause"
+                        }           
+                    }
+                    steps {
+                        script {
+                            try {
+                                name = "staging"
+                                url = "https://showcase.sit.example.com"
+                                sh(
+                                    script: "bash deploy.sh dev ${K8_SIT_CLUSTER_NAMESPACE} ${K8_SIT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh 'sleep 90'
+                                sh(
+                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_SIT_CLUSTER_NAME}",
+                                    returnStdout: true
+                                ).trim()
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
+                        }
+                    }
+                }
+                stage('deploy_qa'){
+                    when {
+                        anyOf {
+                            triggeredBy cause: "UserIdCause"
+                            triggeredBy cause: "BranchEventCause"
+                        }           
+                    }
+                    steps {
+                        script {
+                            try {
+                                name = "qa"
+                                url = "https://showcase.qa.example.com"
+                                sh(
+                                    script: "bash deploy.sh dev ${K8_QA_CLUSTER_NAMESPACE} ${K8_QA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh 'sleep 90'
+                                sh(
+                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_QA_CLUSTER_NAME}",
+                                    returnStdout: true
+                                ).trim()
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
+                        }
+                    }
+                }
+                stage('deploy_pih'){
+                    when {
+                        anyOf {
+                            triggeredBy cause: "UserIdCause"
+                            triggeredBy cause: "BranchEventCause"
+                        }           
+                    }
+                    steps {
+                        script {
+                            try {
+                                name = "pih"
+                                url = "https://showcase.pih.example.com"
+                                sh(
+                                    script: "bash deploy.sh dev ${K8_PIH_CLUSTER_NAMESPACE} ${K8_PIH_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                                    returnStdout: true
+                                ).trim()
+                                sh 'sleep 90'
+                                sh(
+                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_PIH_CLUSTER_NAME}",
+                                    returnStdout: true
+                                ).trim()
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                                // throw err
+                            }
+                        }
+                    }
+                }
                 // stage('deploy_mia'){
                 //     when {
                 //         anyOf {
