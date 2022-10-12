@@ -174,14 +174,14 @@ pipeline {
                             try {
                                 prePackage()
                                 
-                                sh(
-                                    script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle :services:core:worker-public:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
+                                // sh(
+                                //     script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                //     returnStdout: true
+                                // ).trim()
+                                // sh(
+                                //     script: 'gradle :services:core:worker-public:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                //     returnStdout: true
+                                // ).trim()
                                 
                                 sh 'cd aio/env-scope'
 
