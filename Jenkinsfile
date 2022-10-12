@@ -1404,25 +1404,25 @@ cenas
 
 // // testStage()
 
-// String slugify(String origin){
-//     String slug = origin.toLowerCase()
-//     slug = slug.replaceAll("[^\\w\\s-/]", "")
-//     slug = slug.replaceAll("[\\s/_-]+", "-")
-//     slug = slug.replaceAll("^-+|-+\$", "")
+String slugify(String origin){
+    String slug = origin.toLowerCase()
+    slug = slug.replaceAll("[^\\w\\s-/]", "")
+    slug = slug.replaceAll("[\\s/_-]+", "-")
+    slug = slug.replaceAll("^-+|-+\$", "")
 
-//     return slug
-// }
+    return slug
+}
 
-// def testStage(){
-//     return pipeline {
-//         stages() {
-//             stage('test'){
-//                 steps {
-//                     script {
-//                         echo "test"
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+def testStage(){
+    return pipeline {
+        stages() {
+            stage('test'){
+                steps {
+                    script {
+                        echo "test"
+                    }
+                }
+            }
+        }
+    }
+}
