@@ -1406,7 +1406,7 @@ String slugify(String origin){
 }
 
 def testStage(){
-    pipeline {
+    return pipeline {
         stages() {
             stage('test'){
                 steps {
