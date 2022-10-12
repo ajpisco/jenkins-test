@@ -1,12 +1,9 @@
-def call(String name = 'human') {
-  pipeline {
-       agent any
-       stages {
-           stage("CENAS") {
-               steps {
-                   echo "hello cenas"
-               }
-           }
-       }
-   }
+def call(String default = '') {
+    stages {
+        stage("CENAS") {
+            steps {
+                echo "hello cenas"
+            }
+        }
+    }
 }
