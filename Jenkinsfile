@@ -172,10 +172,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
-                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                                    returnStdout: true
-                                ).trim()
+                                prePackage()
                                 
                                 sh(
                                     script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
@@ -230,10 +227,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
-                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                                    returnStdout: true
-                                ).trim()
+                                prePackage()
                                 
                                 sh(
                                     script: 'gradle :web-apps:buildWorker',
@@ -286,10 +280,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
-                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                                    returnStdout: true
-                                ).trim()
+                                prePackage()
                                 
                                 sh(
                                     script: 'gradle :services:core:industry:build -DskipTests=true -Dcheckstyle.skip=true -x test',
@@ -344,10 +335,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
-                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                                    returnStdout: true
-                                ).trim()
+                                prePackage()
                                 
                                 sh(
                                     script: 'gradle :web-apps:buildIndustry',
@@ -398,10 +386,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
-                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                                    returnStdout: true
-                                ).trim()
+                                prePackage()
                                 
                                 sh(
                                     script: 'gradle :services:ancillary:messaging:build -DskipTests=true -Dcheckstyle.skip=true -x test',
@@ -452,10 +437,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
-                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                                    returnStdout: true
-                                ).trim()
+                                prePackage()
                                 sh 'rm -rf aio/env-scope/service/*.* aio/env-scope/web-apps/*.* aio/env-scope/api-docs/*.*'
                                 
                                 sh(
@@ -508,10 +490,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                sh(
-                                    script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                                    returnStdout: true
-                                ).trim()
+                                prePackage()
                                 sh 'rm -rf aio/env-scope/services/core/api-lighthouse/*.* aio/env-scope/api-lighthouse-docs/*.*'
                                 
                                 sh(
@@ -611,10 +590,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh(
-                            script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
-                            returnStdout: true
-                        ).trim()
+                        prePackage()
                         
                         sh(
                             script: 'gradle build --profile -DskipTests=true -Dcheckstyle.skip=true -x test',
@@ -1016,347 +992,347 @@ pipeline {
                         }
                     }
                 }
-                stage('deploy_qa'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "qa"
-                                url = "https://showcase.qa.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_QA_CLUSTER_NAMESPACE} ${K8_QA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_QA_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_pih'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "pih"
-                                url = "https://showcase.pih.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_PIH_CLUSTER_NAMESPACE} ${K8_PIH_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_PIH_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_mia'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "mia"
-                                url = "https://showcase.mia.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_MIA_CLUSTER_NAMESPACE} ${K8_MIA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MIA_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_eap'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "eap"
-                                url = "https://showcase.eap.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_EAP_CLUSTER_NAMESPACE} ${K8_EAP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_EAP_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_tsb'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "Training and Sandbox"
-                                url = "https://industry.tsb.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_TSB_CLUSTER_NAMESPACE} ${K8_TSB_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_TSB_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_uat'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "uat"
-                                url = "https://mypass.uat.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_UAT_CLUSTER_NAMESPACE} ${K8_UAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_UAT_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_BHP-SIT'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "BHP Pilot Environment"
-                                url = "https://industry.bhp1buat.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_BHP1B_UAT_CLUSTER_NAMESPACE} ${K8_BHP1B_UAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_BHP1B_UAT_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_BHP-UAT'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "BHP UAT Environment"
-                                url = "https://industry.bhpuat.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_BHPUAT_CLUSTER_NAMESPACE} ${K8_BHPUAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_BHPUAT_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_UAT2'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "UAT2 Environment"
-                                url = "https://industry.uat2.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_UAT2_CLUSTER_NAMESPACE} ${K8_UAT2_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_UAT2_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_mgu'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "MGU"
-                                url = "https://industry.mgu.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_MGU_CLUSTER_NAMESPACE} ${K8_MGU_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MGU_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_BHP-DEV'){
-                    when {
-                        anyOf {
-                            triggeredBy cause: "UserIdCause"
-                            triggeredBy cause: "BranchEventCause"
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "BHP DEV Environment"
-                                url = "https://industry.dev2.example.com"
-                                sh(
-                                    script: "bash deploy.sh dev ${K8_DEV2_CLUSTER_NAMESPACE} ${K8_DEV2_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_DEV2_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
-                stage('deploy_mgp'){
-                    when {
-                        allOf {
-                            triggeredBy cause: "UserIdCause"
-                            branch 'master'
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "Production-MGP"
-                                url = "https://mypass.example.com"
-                                echo "Deploying to production evironment"
-                                sh(
-                                    script: "aws s3 ls \"s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar\" && aws s3 cp s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar s3://plugins.example.com/com/mypass/neo4j-mypass/latest/neo4j-mypass-latest.jar",
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: "bash deploy.sh mgp ${K8_MGP_CLUSTER_NAMESPACE} ${K8_MGP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
-                                    returnStdout: true
-                                ).trim()
-                                sh 'sleep 90'
-                                sh(
-                                    script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MGP_CLUSTER_NAME}",
-                                    returnStdout: true
-                                ).trim()
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
+                // stage('deploy_qa'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "qa"
+                //                 url = "https://showcase.qa.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_QA_CLUSTER_NAMESPACE} ${K8_QA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_QA_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_pih'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "pih"
+                //                 url = "https://showcase.pih.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_PIH_CLUSTER_NAMESPACE} ${K8_PIH_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_PIH_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_mia'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "mia"
+                //                 url = "https://showcase.mia.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_MIA_CLUSTER_NAMESPACE} ${K8_MIA_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MIA_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_eap'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "eap"
+                //                 url = "https://showcase.eap.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_EAP_CLUSTER_NAMESPACE} ${K8_EAP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_EAP_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_tsb'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "Training and Sandbox"
+                //                 url = "https://industry.tsb.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_TSB_CLUSTER_NAMESPACE} ${K8_TSB_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_TSB_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_uat'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "uat"
+                //                 url = "https://mypass.uat.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_UAT_CLUSTER_NAMESPACE} ${K8_UAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_UAT_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_BHP-SIT'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "BHP Pilot Environment"
+                //                 url = "https://industry.bhp1buat.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_BHP1B_UAT_CLUSTER_NAMESPACE} ${K8_BHP1B_UAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_BHP1B_UAT_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_BHP-UAT'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "BHP UAT Environment"
+                //                 url = "https://industry.bhpuat.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_BHPUAT_CLUSTER_NAMESPACE} ${K8_BHPUAT_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_BHPUAT_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_UAT2'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "UAT2 Environment"
+                //                 url = "https://industry.uat2.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_UAT2_CLUSTER_NAMESPACE} ${K8_UAT2_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_UAT2_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_mgu'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "MGU"
+                //                 url = "https://industry.mgu.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_MGU_CLUSTER_NAMESPACE} ${K8_MGU_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MGU_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_BHP-DEV'){
+                //     when {
+                //         anyOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             triggeredBy cause: "BranchEventCause"
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "BHP DEV Environment"
+                //                 url = "https://industry.dev2.example.com"
+                //                 sh(
+                //                     script: "bash deploy.sh dev ${K8_DEV2_CLUSTER_NAMESPACE} ${K8_DEV2_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_DEV2_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
+                // stage('deploy_mgp'){
+                //     when {
+                //         allOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             branch 'master'
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "Production-MGP"
+                //                 url = "https://mypass.example.com"
+                //                 echo "Deploying to production evironment"
+                //                 sh(
+                //                     script: "aws s3 ls \"s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar\" && aws s3 cp s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar s3://plugins.example.com/com/mypass/neo4j-mypass/latest/neo4j-mypass-latest.jar",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh(
+                //                     script: "bash deploy.sh mgp ${K8_MGP_CLUSTER_NAMESPACE} ${K8_MGP_CLUSTER_NAME} ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_NAME} ${CI_COMMIT_SHORT_SHA}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh 'sleep 90'
+                //                 sh(
+                //                     script: "bash deploy-apigateway.sh dev ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} ${K8_MGP_CLUSTER_NAME}",
+                //                     returnStdout: true
+                //                 ).trim()
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 // throw err
+                //             }
+                //         }
+                //     }
+                // }
 
 //                 // stage('deploy_production'){
 //                 //     when {
@@ -1410,4 +1386,11 @@ String slugify(String origin){
     slug = slug.replaceAll("^-+|-+\$", "")
 
     return slug
+}
+
+def prePackage(){
+    sh(
+        script: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591674360001.dkr.ecr.ap-southeast-2.amazonaws.com',
+        returnStdout: true
+    ).trim()
 }
