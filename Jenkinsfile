@@ -937,6 +937,13 @@ pipeline {
                 }
             }
         }
+        stage('test'){
+            steps {
+                script {
+                    echo "test"
+                }
+            }
+        }
         
         stage('deploy') {
             // agent {
