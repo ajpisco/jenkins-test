@@ -1,7 +1,8 @@
 def call(String name = '') {
   pipeline {
-       agent any
-       stages {
+    agent any
+    
+    stages {
         stage('openMr') {
             stages {
                 stage('open-merge'){
@@ -39,4 +40,5 @@ def call(String name = '') {
             }
         }
    }
+  }
 }
