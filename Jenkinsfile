@@ -116,7 +116,7 @@ pipeline {
                                 ).trim()
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                throw err
+                                // throw err
                             }
                         }
                     }
