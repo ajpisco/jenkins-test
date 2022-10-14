@@ -213,14 +213,14 @@ pipeline {
                 }
                 stage('package-worker-ui'){
                     when {
-                        allOf{
-                            anyOf {
-                                changeset 'web-apps/projects/worker/**/*'
-                            }
-                            anyOf {
-                                triggeredBy cause: "UserIdCause"
+                        anyOf {
+                            allOf{
+                                anyOf {
+                                    changeset 'web-apps/projects/worker/**/*'
+                                }
                                 triggeredBy cause: "BranchEventCause"
                             }
+                            triggeredBy cause: "UserIdCause"
                         }
                     }
                     steps {
@@ -258,16 +258,16 @@ pipeline {
                 }
                 stage('package-industry-be'){
                     when {
-                        allOf{
-                            anyOf {
-                                changeset 'services/core/admin/**/*'
-                                changeset 'services/core/industry/**/*'
-                                changeset 'services/core/commons/**/*'
-                            }
-                            anyOf {
-                                triggeredBy cause: "UserIdCause"
+                        anyOf {
+                            allOf{
+                                anyOf {
+                                    changeset 'services/core/admin/**/*'
+                                    changeset 'services/core/industry/**/*'
+                                    changeset 'services/core/commons/**/*'
+                                }
                                 triggeredBy cause: "BranchEventCause"
                             }
+                            triggeredBy cause: "UserIdCause"
                         }
                     }
                     steps {
@@ -307,14 +307,14 @@ pipeline {
                 }
                 stage('package-industry-ui'){
                     when {
-                        allOf{
-                            anyOf {
-                                changeset 'web-apps/projects/industry/**/*'
-                            }
-                            anyOf {
-                                triggeredBy cause: "UserIdCause"
+                        anyOf {
+                            allOf{
+                                anyOf {
+                                    changeset 'web-apps/projects/industry/**/*'
+                                }
                                 triggeredBy cause: "BranchEventCause"
                             }
+                            triggeredBy cause: "UserIdCause"
                         }
                     }
                     steps {
@@ -352,14 +352,14 @@ pipeline {
                 }
                 stage('package-ancillary'){
                     when {
-                        allOf{
-                            anyOf {
-                                changeset 'services/ancillary/**/*'
-                            }
-                            anyOf {
-                                triggeredBy cause: "UserIdCause"
+                        anyOf {
+                            allOf{
+                                anyOf {
+                                    changeset 'services/ancillary/**/*'
+                                }
                                 triggeredBy cause: "BranchEventCause"
                             }
+                            triggeredBy cause: "UserIdCause"
                         }
                     }
                     steps {
@@ -397,14 +397,14 @@ pipeline {
                 }
                 stage('package-api'){
                     when {
-                        allOf{
-                            anyOf {
-                                changeset 'services/core/api/**/*'
-                            }
-                            anyOf {
-                                triggeredBy cause: "UserIdCause"
+                        anyOf {
+                            allOf{
+                                anyOf {
+                                    changeset 'services/core/api/**/*'
+                                }
                                 triggeredBy cause: "BranchEventCause"
                             }
+                            triggeredBy cause: "UserIdCause"
                         }
                     }
                     steps {
@@ -494,14 +494,14 @@ pipeline {
                 }
                 stage('package-plugins'){
                     when {
-                        allOf{
-                            anyOf {
-                                changeset 'plugins/neo4j-mypass/**/*'
-                            }
-                            anyOf {
-                                triggeredBy cause: "UserIdCause"
+                        anyOf {
+                            allOf{
+                                anyOf {
+                                    changeset 'plugins/neo4j-mypass/**/*'
+                                }
                                 triggeredBy cause: "BranchEventCause"
                             }
+                            triggeredBy cause: "UserIdCause"
                         }
                     }
                     steps {
