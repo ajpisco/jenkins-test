@@ -55,9 +55,6 @@ def K8_MGP_CLUSTER_NAMESPACE = 'mgp-ns'
 // def K8_MGP_CLUSTER_STATE = "mgp-mypass-com"
 def K8_KUBECTL_VERSION = '1.1.7'
 
-// @Library('dummy') _
-// openMrStage ''
-
 pipeline {
     agent any
 
@@ -119,7 +116,7 @@ pipeline {
                                 ).trim()
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -195,7 +192,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -215,6 +212,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                archiveArtifacts artifacts: 'web-apps/dist/shared/'
+
                                 prePackage()
                                 
                                 sh(
@@ -234,7 +233,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -279,7 +278,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -299,6 +298,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                archiveArtifacts artifacts: 'web-apps/dist/shared/'
+
                                 prePackage()
                                 
                                 sh(
@@ -318,7 +319,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -338,6 +339,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                archiveArtifacts artifacts: 'aio/env-scope/services/', 'aio/env-scope/web-apps/'
+
                                 prePackage()
                                 
                                 sh(
@@ -357,7 +360,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -377,6 +380,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                archiveArtifacts artifacts: 'aio/env-scope/api-docs/'
+
                                 prePackage()
                                 sh 'rm -rf aio/env-scope/service/*.* aio/env-scope/web-apps/*.* aio/env-scope/api-docs/*.*'
                                 
@@ -401,7 +406,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -418,6 +423,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                archiveArtifacts artifacts: 'aio/env-scope/api-lighthouse-docs/'
+
                                 prePackage()
                                 sh 'rm -rf aio/env-scope/services/core/api-lighthouse/*.* aio/env-scope/api-lighthouse-docs/*.*'
                                 
@@ -442,7 +449,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -479,7 +486,7 @@ pipeline {
                           
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -506,6 +513,8 @@ pipeline {
             steps {
                 script {
                     try {
+                        archiveArtifacts artifacts: 'aio/env-scope/api-docs/', 'build/reports/'
+
                         prePackage()
                         
                         sh(
@@ -577,7 +586,7 @@ pipeline {
                     
                     } catch (err) {
                         echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                        // throw err
+                        throw err
                     }
                 }
             }
@@ -588,11 +597,15 @@ pipeline {
                 stage('pre-test-ui'){
                     steps {
                         script {
-                            // sh(
-                            //     script: "apk add chromium",
-                            //     returnStdout: true
-                            // ).trim()
-                            sh 'export CHROME_BIN=/usr/bin/chromium-browser'
+                            try {
+                                sh(
+                                    script: "apk add chromium",
+                                    returnStdout: true
+                                ).trim()
+                                sh 'export CHROME_BIN=/usr/bin/chromium-browser'
+                            } catch (err) {
+                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                            }
                         }
                     }
                 }
@@ -642,11 +655,11 @@ pipeline {
         }
         
         stage('clean') {
-            // agent {
-            //     docker {
-            //         image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
-            //     }
-            // }
+            agent {
+                docker {
+                    image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
+                }
+            }
             stages {
                 stage('clean_deployment'){
                     when {
@@ -727,7 +740,7 @@ pipeline {
                                 // ).trim()
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -736,11 +749,11 @@ pipeline {
         }
         
         stage('backup') {
-            // agent {
-            //     docker {
-            //         image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
-            //     }
-            // }
+            agent {
+                docker {
+                    image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
+                }
+            }
             stages {
                 stage('backup_production'){
                     when {
@@ -778,7 +791,7 @@ pipeline {
                                 ).trim()
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -787,11 +800,11 @@ pipeline {
         }
         
         stage('deploy') {
-            // agent {
-            //     docker {
-            //         image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
-            //     }
-            // }
+            agent {
+                docker {
+                    image "${CI_REGISTRY}/${CI_REGISTRY_NAMESPACE}/kubectl:${K8_KUBECTL_VERSION}"
+                }
+            }
             stages {
                 stage('pre-deploy'){
                     steps {
@@ -824,7 +837,7 @@ pipeline {
 
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -853,7 +866,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -882,7 +895,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -911,7 +924,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -940,7 +953,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -969,7 +982,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -998,7 +1011,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -1027,7 +1040,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -1056,7 +1069,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -1085,7 +1098,7 @@ pipeline {
 
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -1114,7 +1127,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -1143,7 +1156,7 @@ pipeline {
                                     
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -1172,7 +1185,7 @@ pipeline {
 
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
@@ -1206,50 +1219,50 @@ pipeline {
 
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
                 }
 
-                stage('deploy_production'){
-                    when {
-                        allOf {
-                            triggeredBy cause: "UserIdCause"
-                            branch 'master'
-                        }           
-                    }
-                    steps {
-                        script {
-                            try {
-                                name = "production"
-                                url = "https://mypass.example.com"
-                                echo "Deploy to production evironment"
-                                sh(
-                                    script: "aws s3 cp s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar s3://plugins.example.com/com/mypass/neo4j-mypass/latest/neo4j-mypass-latest.jar",
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: "kops export kubecfg --name ${K8_PRO_CLUSTER_NAME} --state=s3://${K8_PRO_CLUSTER_STATE}",
-                                    returnStdout: true
-                                ).trim()
+                // stage('deploy_production'){
+                //     when {
+                //         allOf {
+                //             triggeredBy cause: "UserIdCause"
+                //             branch 'master'
+                //         }           
+                //     }
+                //     steps {
+                //         script {
+                //             try {
+                //                 name = "production"
+                //                 url = "https://mypass.example.com"
+                //                 echo "Deploy to production evironment"
+                //                 sh(
+                //                     script: "aws s3 cp s3://plugins.example.com/com/mypass/neo4j-mypass/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/neo4j-mypass-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.jar s3://plugins.example.com/com/mypass/neo4j-mypass/latest/neo4j-mypass-latest.jar",
+                //                     returnStdout: true
+                //                 ).trim()
+                //                 sh(
+                //                     script: "kops export kubecfg --name ${K8_PRO_CLUSTER_NAME} --state=s3://${K8_PRO_CLUSTER_STATE}",
+                //                     returnStdout: true
+                //                 ).trim()
 
-                                scriptDeploy(name,
-                                    url,
-                                    "production",
-                                    K8_PRO_CLUSTER_NAMESPACE,
-                                    K8_PRO_CLUSTER_NAME,
-                                    CI_COMMIT_REF_NAME,
-                                    CI_COMMIT_REF_SLUG,
-                                    CI_COMMIT_SHORT_SHA)
+                //                 scriptDeploy(name,
+                //                     url,
+                //                     "production",
+                //                     K8_PRO_CLUSTER_NAMESPACE,
+                //                     K8_PRO_CLUSTER_NAME,
+                //                     CI_COMMIT_REF_NAME,
+                //                     CI_COMMIT_REF_SLUG,
+                //                     CI_COMMIT_SHORT_SHA)
                                     
-                            } catch (err) {
-                                echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
-                            }
-                        }
-                    }
-                }
+                //             } catch (err) {
+                //                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
+                //                 throw err
+                //             }
+                //         }
+                //     }
+                // }
             }
         }
     }
