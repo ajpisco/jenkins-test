@@ -110,7 +110,7 @@ pipeline {
                             try {
                                 sh 'cd web-apps'
 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
                                 ]) {
                                     sh(
@@ -134,7 +134,7 @@ pipeline {
                     try {
                         sh 'cd web-apps'
 
-                        cache(caches: [
+                        cache(maxCacheSize: 250, caches: [
                             [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
                         ]) {
                             sh(
@@ -181,7 +181,7 @@ pipeline {
                             try {
                                 prePackage()
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -230,7 +230,7 @@ pipeline {
 
                                 prePackage()
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -275,7 +275,7 @@ pipeline {
                             try {
                                 prePackage()
 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -324,7 +324,7 @@ pipeline {
 
                                 prePackage()
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -369,7 +369,7 @@ pipeline {
 
                                 prePackage()
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -415,7 +415,7 @@ pipeline {
                                 prePackage()
                                 sh 'rm -rf aio/env-scope/service/*.* aio/env-scope/web-apps/*.* aio/env-scope/api-docs/*.*'
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -462,7 +462,7 @@ pipeline {
                                 prePackage()
                                 sh 'rm -rf aio/env-scope/services/core/api-lighthouse/*.* aio/env-scope/api-lighthouse-docs/*.*'
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -509,7 +509,7 @@ pipeline {
                             try {
                                 sh 'rm -rf aio/env-scope/api-docs/*.*'
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                                 ]) {
                                     sh(
@@ -559,7 +559,7 @@ pipeline {
 
                         prePackage()
                         
-                        cache(caches: [
+                        cache(maxCacheSize: 250, caches: [
                             [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/'],
                             [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
                         ]) {
@@ -668,7 +668,7 @@ pipeline {
                             try {
                                 sh 'cd web-apps'
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
                                 ]) {
                                     sh(
@@ -694,7 +694,7 @@ pipeline {
                             try {
                                 sh 'cd web-apps'
                                 
-                                cache(caches: [
+                                cache(maxCacheSize: 250, caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
                                 ]) {
                                     sh(
