@@ -213,6 +213,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: '.gradle/caches/'
+
                                 archiveArtifacts artifacts: 'web-apps/dist/shared/'
 
                                 prePackage()
