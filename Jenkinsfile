@@ -163,16 +163,16 @@ pipeline {
             stages {
                 stage('package-worker-be'){
                     when {
-                        allOf{
-                            anyOf {
-                                changeset 'services/core/worker/**/*'
-                                changeset 'services/core/worker-public/**/*'
-                                changeset 'services/core/commons/**/*'
-                            }
-                            anyOf {
-                                triggeredBy cause: "UserIdCause"
+                        anyOf {
+                            allOf{
+                                anyOf {
+                                    changeset 'services/core/worker/**/*'
+                                    changeset 'services/core/worker-public/**/*'
+                                    changeset 'services/core/commons/**/*'
+                                }
                                 triggeredBy cause: "BranchEventCause"
                             }
+                            triggeredBy cause: "UserIdCause"
                         }
                     }
                     steps {
