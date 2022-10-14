@@ -108,7 +108,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: 'web-apps/node_modules/'
+                                // caches: 'web-apps/node_modules/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
+                                ]) 
 
                                 sh 'cd web-apps'
                                 sh(
@@ -129,7 +132,10 @@ pipeline {
             steps {
                 script {
                     try {
-                        caches: 'web-apps/node_modules/'
+                        // caches: 'web-apps/node_modules/'
+                        cache(caches: [
+                            [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
+                        ]) 
 
                         sh 'cd web-apps'
                         sh(
@@ -172,7 +178,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: '.gradle/caches/'
+                                // caches: '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 prePackage()
                                 
@@ -217,7 +226,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: '.gradle/caches/'
+                                // caches: '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 archiveArtifacts artifacts: 'web-apps/dist/shared/'
 
@@ -262,7 +274,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: '.gradle/caches/'
+                                // caches: '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 prePackage()
                                 
@@ -307,7 +322,11 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: 'web-apps/node_modules/', '.gradle/caches/'
+                                // caches: 'web-apps/node_modules/', '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/'],
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 archiveArtifacts artifacts: 'web-apps/dist/shared/'
 
@@ -350,7 +369,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: '.gradle/caches/'
+                                // caches: '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 archiveArtifacts artifacts: 'aio/env-scope/services/', 'aio/env-scope/web-apps/'
 
@@ -393,7 +415,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: '.gradle/caches/'
+                                // caches: '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 archiveArtifacts artifacts: 'aio/env-scope/api-docs/'
 
@@ -438,7 +463,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: '.gradle/caches/'
+                                // caches: '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 archiveArtifacts artifacts: 'aio/env-scope/api-lighthouse-docs/'
 
@@ -486,7 +514,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: '.gradle/caches/'
+                                // caches: '.gradle/caches/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) 
 
                                 sh 'rm -rf aio/env-scope/api-docs/*.*'
                                 
@@ -532,7 +563,11 @@ pipeline {
             steps {
                 script {
                     try {
-                        caches: 'web-apps/node_modules/', '.gradle/caches/'
+                        // caches: 'web-apps/node_modules/', '.gradle/caches/'
+                        cache(caches: [
+                            [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/'],
+                            [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                        ]) 
 
                         archiveArtifacts artifacts: 'aio/env-scope/api-docs/', 'build/reports/'
 
@@ -640,7 +675,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: 'web-apps/node_modules/'
+                                // caches: 'web-apps/node_modules/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
+                                ]) 
 
                                 sh 'cd web-apps'
                                 sh(
@@ -663,7 +701,10 @@ pipeline {
                     steps {
                         script {
                             try {
-                                caches: 'web-apps/node_modules/'
+                                // caches: 'web-apps/node_modules/'
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
+                                ]) 
 
                                 sh 'cd web-apps'
                                 sh(
