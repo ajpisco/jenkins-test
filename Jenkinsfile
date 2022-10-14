@@ -212,7 +212,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            try { 
+                            try {
                                 caches: '.gradle/caches/'
 
                                 archiveArtifacts artifacts: 'web-apps/dist/shared/'
