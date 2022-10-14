@@ -108,16 +108,18 @@ pipeline {
                     steps {
                         script {
                             try {
+                                sh 'cd web-apps'
+
                                 // caches: 'web-apps/node_modules/'
                                 cache(caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
-                                ]) 
+                                ]) (
+                                    sh(
+                                        script: 'npm install',
+                                        returnStdout: true
+                                    ).trim()
+                                )
 
-                                sh 'cd web-apps'
-                                sh(
-                                    script: 'npm install',
-                                    returnStdout: true
-                                ).trim()
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 // throw err
@@ -132,16 +134,17 @@ pipeline {
             steps {
                 script {
                     try {
+                        sh 'cd web-apps'
+
                         // caches: 'web-apps/node_modules/'
                         cache(caches: [
                             [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
-                        ]) 
-
-                        sh 'cd web-apps'
-                        sh(
-                            script: 'npm run "format:check"',
-                            returnStdout: true
-                        ).trim()
+                        ]) (
+                            sh(
+                                script: 'npm run "format:check"',
+                                returnStdout: true
+                            ).trim()
+                        )
                     } catch (err) {
                         echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                     }
@@ -178,21 +181,22 @@ pipeline {
                     steps {
                         script {
                             try {
+                                prePackage()
+                                
                                 // caches: '.gradle/caches/'
                                 cache(caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
-                                prePackage()
+                                ]) (
+                                    sh(
+                                        script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                    sh(
+                                        script: 'gradle :services:core:worker-public:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                )
                                 
-                                sh(
-                                    script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle :services:core:worker-public:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
                                 
                                 sh 'cd aio/env-scope'
 
