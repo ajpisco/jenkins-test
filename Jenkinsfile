@@ -110,7 +110,6 @@ pipeline {
                             try {
                                 sh 'cd web-apps'
 
-                                // caches: 'web-apps/node_modules/'
                                 cache(caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
                                 ]) {
@@ -133,16 +132,17 @@ pipeline {
             steps {
                 script {
                     try {
-                        // caches: 'web-apps/node_modules/'
+                        sh 'cd web-apps'
+
                         cache(caches: [
                             [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
-                        ]) 
+                        ]) {
+                            sh(
+                                script: 'npm run "format:check"',
+                                returnStdout: true
+                            ).trim()
+                        }
 
-                        sh 'cd web-apps'
-                        sh(
-                            script: 'npm run "format:check"',
-                            returnStdout: true
-                        ).trim()
                     } catch (err) {
                         echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                     }
@@ -179,22 +179,21 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: '.gradle/caches/'
-                                cache(caches: [
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
                                 prePackage()
                                 
-                                sh(
-                                    script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle :services:core:worker-public:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) {
+                                    sh(
+                                        script: 'gradle :services:core:worker:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                    sh(
+                                        script: 'gradle :services:core:worker-public:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                }
+
                                 sh 'cd aio/env-scope'
 
                                 postPackage("worker-be",
@@ -227,19 +226,18 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: '.gradle/caches/'
-                                cache(caches: [
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
                                 archiveArtifacts artifacts: 'web-apps/dist/shared/'
 
                                 prePackage()
                                 
-                                sh(
-                                    script: 'gradle :web-apps:buildWorker',
-                                    returnStdout: true
-                                ).trim()
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) {
+                                    sh(
+                                        script: 'gradle :web-apps:buildWorker',
+                                        returnStdout: true
+                                    ).trim()
+                                }
                                 
                                 sh 'cd aio/env-scope'
 
@@ -275,21 +273,20 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: '.gradle/caches/'
+                                prePackage()
+
                                 cache(caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
-                                prePackage()
-                                
-                                sh(
-                                    script: 'gradle :services:core:industry:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle :services:core:admin:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
+                                ]) {
+                                    sh(
+                                        script: 'gradle :services:core:industry:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                    sh(
+                                        script: 'gradle :services:core:admin:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                }
                                 
                                 sh 'cd aio/env-scope'
 
@@ -323,21 +320,19 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: 'web-apps/node_modules/', '.gradle/caches/'
-                                cache(caches: [
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/'],
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
                                 archiveArtifacts artifacts: 'web-apps/dist/shared/'
 
                                 prePackage()
                                 
-                                sh(
-                                    script: 'gradle :web-apps:buildIndustry',
-                                    returnStdout: true
-                                ).trim()
-                                
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) {
+                                    sh(
+                                        script: 'gradle :web-apps:buildIndustry',
+                                        returnStdout: true
+                                    ).trim()
+                                }
+
                                 sh 'cd aio/env-scope'
 
                                 postPackage("industry-ui",
@@ -370,20 +365,19 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: '.gradle/caches/'
-                                cache(caches: [
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
                                 archiveArtifacts artifacts: 'aio/env-scope/services/', 'aio/env-scope/web-apps/'
 
                                 prePackage()
                                 
-                                sh(
-                                    script: 'gradle :services:ancillary:messaging:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) {
+                                    sh(
+                                        script: 'gradle :services:ancillary:messaging:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                }
+
                                 sh 'cd aio/env-scope'
 
                                 postPackage("ancillary",
@@ -416,24 +410,23 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: '.gradle/caches/'
-                                cache(caches: [
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
                                 archiveArtifacts artifacts: 'aio/env-scope/api-docs/'
 
                                 prePackage()
                                 sh 'rm -rf aio/env-scope/service/*.* aio/env-scope/web-apps/*.* aio/env-scope/api-docs/*.*'
                                 
-                                sh(
-                                    script: 'gradle :services:core:api:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle :services:core:api:generateOpenApiDocs',
-                                    returnStdout: true
-                                ).trim()
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) {
+                                    sh(
+                                        script: 'gradle :services:core:api:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                    sh(
+                                        script: 'gradle :services:core:api:generateOpenApiDocs',
+                                        returnStdout: true
+                                    ).trim()
+                                }
                                 
                                 sh 'cd aio/env-scope'
 
@@ -464,24 +457,23 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: '.gradle/caches/'
-                                cache(caches: [
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
                                 archiveArtifacts artifacts: 'aio/env-scope/api-lighthouse-docs/'
 
                                 prePackage()
                                 sh 'rm -rf aio/env-scope/services/core/api-lighthouse/*.* aio/env-scope/api-lighthouse-docs/*.*'
                                 
-                                sh(
-                                    script: 'gradle :services:core:api-lighthouse:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle :services:core:api-lighthouse:generateOpenApiDocs',
-                                    returnStdout: true
-                                ).trim()
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) {
+                                    sh(
+                                        script: 'gradle :services:core:api-lighthouse:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                    sh(
+                                        script: 'gradle :services:core:api-lighthouse:generateOpenApiDocs',
+                                        returnStdout: true
+                                    ).trim()
+                                }
                                 
                                 sh 'cd aio/env-scope'
 
@@ -515,26 +507,25 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: '.gradle/caches/'
-                                cache(caches: [
-                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                                ]) 
-
                                 sh 'rm -rf aio/env-scope/api-docs/*.*'
                                 
-                                sh(
-                                    script: 'gradle :plugins:neo4j-mypass:build -DskipTests=true -Dcheckstyle.skip=true -x test',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
-                                    returnStdout: true
-                                ).trim()
-                                sh(
-                                    script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_REGISTRY_LATEST -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
-                                    returnStdout: true
-                                ).trim()
-                          
+                                cache(caches: [
+                                    [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                                ]) {
+                                    sh(
+                                        script: 'gradle :plugins:neo4j-mypass:build -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                        returnStdout: true
+                                    ).trim()
+                                    sh(
+                                        script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                                        returnStdout: true
+                                    ).trim()
+                                    sh(
+                                        script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_REGISTRY_LATEST -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                                        returnStdout: true
+                                    ).trim()
+                                }
+
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                                 throw err
@@ -564,32 +555,31 @@ pipeline {
             steps {
                 script {
                     try {
-                        // caches: 'web-apps/node_modules/', '.gradle/caches/'
-                        cache(caches: [
-                            [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/'],
-                            [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
-                        ]) 
-
                         archiveArtifacts artifacts: 'aio/env-scope/api-docs/', 'build/reports/'
 
                         prePackage()
                         
-                        sh(
-                            script: 'gradle build --profile -DskipTests=true -Dcheckstyle.skip=true -x test',
-                            returnStdout: true
-                        ).trim()
-                        sh(
-                            script: 'gradle :services:core:api:generateOpenApiDocs',
-                            returnStdout: true
-                        ).trim()
-                        sh(
-                            script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
-                            returnStdout: true
-                        ).trim()
-                        sh(
-                            script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_REGISTRY_LATEST -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
-                            returnStdout: true
-                        ).trim()
+                        cache(caches: [
+                            [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/'],
+                            [$class: 'ArbitraryFileCache', includes: '**/*', path: '.gradle/caches/']
+                        ]) {
+                            sh(
+                                script: 'gradle build --profile -DskipTests=true -Dcheckstyle.skip=true -x test',
+                                returnStdout: true
+                            ).trim()
+                            sh(
+                                script: 'gradle :services:core:api:generateOpenApiDocs',
+                                returnStdout: true
+                            ).trim()
+                            sh(
+                                script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                                returnStdout: true
+                            ).trim()
+                            sh(
+                                script: 'gradle publish -Ds3_plugin_location=s3://plugins.example.com -Dplugin_version=$CI_COMMIT_REF_SLUG-$CI_REGISTRY_LATEST -DAWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -DAWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY',
+                                returnStdout: true
+                            ).trim()
+                        }
                         
                         sh 'cd aio/env-scope'
 
@@ -676,16 +666,16 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: 'web-apps/node_modules/'
+                                sh 'cd web-apps'
+                                
                                 cache(caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
-                                ]) 
-
-                                sh 'cd web-apps'
-                                sh(
-                                    script: "npm run test-industry -- --no-watch --no-progress --browsers=ChromeHeadlessCI",
-                                    returnStdout: true
-                                ).trim()
+                                ]) {
+                                    sh(
+                                        script: "npm run test-industry -- --no-watch --no-progress --browsers=ChromeHeadlessCI",
+                                        returnStdout: true
+                                    ).trim()
+                                }
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                             }
@@ -702,16 +692,16 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // caches: 'web-apps/node_modules/'
+                                sh 'cd web-apps'
+                                
                                 cache(caches: [
                                     [$class: 'ArbitraryFileCache', includes: '**/*', path: 'web-apps/node_modules/']
-                                ]) 
-
-                                sh 'cd web-apps'
-                                sh(
-                                    script: "npm run test-worker -- --no-watch --no-progress --browsers=ChromeHeadlessCI",
-                                    returnStdout: true
-                                ).trim()
+                                ]) {
+                                    sh(
+                                        script: "npm run test-worker -- --no-watch --no-progress --browsers=ChromeHeadlessCI",
+                                        returnStdout: true
+                                    ).trim()
+                                }
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
                             }
