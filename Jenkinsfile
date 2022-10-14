@@ -70,7 +70,6 @@ pipeline {
                         script {
                             // try block to prevent the build to stop in case of error
                             try {
-                                sh 'printenv'
 
                                 sh 'export GRADLE_USER_HOME=$(pwd)/.gradle'
 
@@ -116,7 +115,7 @@ pipeline {
                                 ).trim()
                             } catch (err) {
                                 echo "Error on ${STAGE_NAME} stage: " + err.getMessage()
-                                // throw err
+                                throw err
                             }
                         }
                     }
