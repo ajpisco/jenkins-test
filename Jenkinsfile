@@ -108,6 +108,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: 'web-apps/node_modules/'
+
                                 sh 'cd web-apps'
                                 sh(
                                     script: 'npm install',
@@ -127,6 +129,8 @@ pipeline {
             steps {
                 script {
                     try {
+                        caches: 'web-apps/node_modules/'
+
                         sh 'cd web-apps'
                         sh(
                             script: 'npm run "format:check"',
@@ -258,6 +262,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: '.gradle/caches/'
+
                                 prePackage()
                                 
                                 sh(
@@ -301,6 +307,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: 'web-apps/node_modules/', '.gradle/caches/'
+
                                 archiveArtifacts artifacts: 'web-apps/dist/shared/'
 
                                 prePackage()
@@ -342,6 +350,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: '.gradle/caches/'
+
                                 archiveArtifacts artifacts: 'aio/env-scope/services/', 'aio/env-scope/web-apps/'
 
                                 prePackage()
@@ -383,6 +393,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: '.gradle/caches/'
+
                                 archiveArtifacts artifacts: 'aio/env-scope/api-docs/'
 
                                 prePackage()
@@ -426,6 +438,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: '.gradle/caches/'
+
                                 archiveArtifacts artifacts: 'aio/env-scope/api-lighthouse-docs/'
 
                                 prePackage()
@@ -472,6 +486,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: '.gradle/caches/'
+
                                 sh 'rm -rf aio/env-scope/api-docs/*.*'
                                 
                                 sh(
@@ -516,6 +532,8 @@ pipeline {
             steps {
                 script {
                     try {
+                        caches: 'web-apps/node_modules/', '.gradle/caches/'
+
                         archiveArtifacts artifacts: 'aio/env-scope/api-docs/', 'build/reports/'
 
                         prePackage()
@@ -622,6 +640,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: 'web-apps/node_modules/'
+
                                 sh 'cd web-apps'
                                 sh(
                                     script: "npm run test-industry -- --no-watch --no-progress --browsers=ChromeHeadlessCI",
@@ -643,6 +663,8 @@ pipeline {
                     steps {
                         script {
                             try {
+                                caches: 'web-apps/node_modules/'
+
                                 sh 'cd web-apps'
                                 sh(
                                     script: "npm run test-worker -- --no-watch --no-progress --browsers=ChromeHeadlessCI",
